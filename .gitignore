@@ -1,0 +1,2 @@
+# No subir carpeta de node_modules a git
+node_modules/
