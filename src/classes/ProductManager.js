@@ -3,84 +3,182 @@ const fs = require('fs').promises;
 class ProductManager {
     constructor(path) {
         this.path = path;
-        
-        const productos = this.leerProductos();
-        if(!productos) {
-            //no hay productos cargados
-            this.proxId = 1;
-        } else {
-            // el proximo id es un valor más que el máximo de los ids de los productos que tenemos
-            this.proxId = Math.max(...productos.map(p => p.id)) + 1;
+        this.productos = [];
+        this.proxId = 1;
+
+        this.inicializar();
+    }
+
+    async inicializar() {
+        await this.leerProductos();
+
+        if(this.productos) {
+            // Hay productos cargados, actualizamos el proxId
+            this.proxId = Math.max(...this.productos.map(prod => prod.id)) + 1;
         }
     }
 
     async leerProductos() {
-        let productos = [];
+        this.productos = [];
 
         try {
             const data = await fs.readFile(this.path, 'utf8');
 
             if(data) {
                 // Hay data cargada que obtener
-                productos = JSON.parse(data);
+                this.productos = JSON.parse(data);
             }
         } catch(error) {
             console.error(`Error al leer productos: ${error}`);
         }
-
-        return productos;
     }
 
-    async escribirProductos(productos) {
+    async escribirProductos() {
         try {
-            const productos_str = JSON.stringify(productos);
+            const productos_str = JSON.stringify(this.productos, null, 2);
 
             await fs.writeFile(this.path, productos_str, 'utf8');
         } catch(error) {
-            console.error(`Error al leer productos: ${error}`);
+            throw new Error(`Error al escribir productos: ${error}`);
         }
     }
 
-    addProduct({title, description, price, thumbnail, code, stock}) {
-        let agregado = false;
+    async addProduct({title, description, code, price, status, stock, category, thumbnails}) {
+        let nuevoProducto = null;
+
+        // Leemos los productos para asegurarnos que el arreglo se encuentre actualizado
+        await this.leerProductos();
 
         // Todos los campos son obligatorios, validamos que eso se cumpla
-        if(!title || !description || !price || !thumbnail || !code || !stock) {
+        if(!title || !description || !code || !price || !status || !stock || !category || !thumbnails) {
 
-            console.log("No se agregaron todos los campos obligatorios");
+            throw new Error("No se agregaron todos los campos obligatorios");
+
+        } else if(typeof(title) !== 'string' || typeof(description) !== 'string' || typeof(code) !== 'string'
+                    || typeof(price) !== 'number' || typeof(status) !== 'boolean' || typeof(stock) !== 'number'
+                    || typeof(category) !== 'string' || !Array.isArray(thumbnails)) {
+
+            throw new Error("No se respetaron los tipos de los parametros");
 
         } else {
             // Buscamos si existe algun producto con el mismo codigo pasado
-            const existeCode = this.products.some(prod => prod.code === code);
+            const existeCode = this.productos.some(prod => prod.code === code);
 
             if(!existeCode) {
                 // No existe un producto con el codigo code
-                const nuevoProducto = {"id":this.proxId, "title":title, "description":description, "price":price,
-                                        "thumbnail":thumbnail, "code":code, "stock":stock}
+                nuevoProducto = {"id":this.proxId, title, description, code, price, status, stock, category, thumbnails}
 
-                this.products.push(nuevoProducto);
+                this.productos.push(nuevoProducto);
+
+                await this.escribirProductos();
                 
-                agregado = true;
                 this.proxId++;
+                console.log(`Producto agregado correctamente: ${nuevoProducto}`);
+            } else {
+                throw new Error("Ya existe un producto con el codigo pasado");
             }
         }
 
-        // devolvemos si el producto se pudo agregar correctamente
-        return agregado;
+        return nuevoProducto;
     }
 
-    getProducts() {
-        return this.products;
+    async getProducts() {
+        // Leemos los productos para asegurarnos que el arreglo se encuentre actualizado
+        await this.leerProductos();
+
+        return this.productos;
     }
 
-    getProductById(id) {
-        const prodBuscado = this.products.find(prod => prod.id === id);
+    async getProductById(id) {
+        const prodBuscado = this.productos.find(prod => prod.id === id);
+
+        // Leemos los productos para asegurarnos que el arreglo se encuentre actualizado
+        await this.leerProductos();
 
         if(!prodBuscado) {
-            //no se encontro un producto con el id pasado
-            console.log("Product not found");
+            // No se encontro un producto con el id pasado
+            throw new Error(`Producto con el id ${id} no encontrado`);
         }
 
         return prodBuscado;
     }
+
+    async updateProduct(id, camposModificados) {
+        // camposModificados = { title, description, code, price, status, stock, category, thumbnails }
+        let actualizado = false;
+
+        // Leemos los productos para asegurarnos que el arreglo se encuentre actualizado
+        await this.leerProductos();
+
+        const index = this.productos.findIndex(prod => prod.id === id);
+        const prodModificado = this.productos[index];
+
+        if(index === -1) {
+            // No se encontro un producto con el id pasado
+            throw new Error(`Producto con el id ${id} no encontrado`);
+        } else {
+            // Actualizamos únicamente los datos que nos pasaron
+            for(let campo in camposModificados) {
+                
+                // Validaciones de que se cumplan las condiciones de tipos y otras restricciones
+                if(campo === 'code') {
+                    if(this.productos.some((prod, i) => i !== index && prod.code === camposModificados.code)) {
+                        // Existe otro producto con el mismo codigo
+                        throw new Error(`El valor de código ${camposModificados.code} ya existe en otro producto`);
+                    }
+                }
+
+                if ((campo === 'price' || campo === 'stock') && typeof camposModificados[campo] !== 'number') {
+                    throw new Error(`El valor de price y stock deben ser numericos`);
+                }
+
+                if (campo === 'status' && typeof camposModificados[campo] !== 'boolean') {
+                    throw new Error(`El valor de status debe ser un valor booleano`);
+                }
+
+                if (campo === 'thumbnails' && !Array.isArray(camposModificados[campo])) {
+                    throw new Error(`El valor de thumbnail debe ser un arreglo`);
+                }
+
+                if (prodModificado[campo] !== camposModificados[campo] && campo !== 'id') {
+                    prodModificado[campo] = camposModificados[campo];
+                    actualizado = true;
+                }
+            }
+
+            if(actualizado) {
+                console.log(`Producto actualizado correctamente: ${this.productos[index]}`);
+                await this.escribirProductos();
+            } else {
+                throw new Error("No se proporcionaron datos validos para actualizar");
+            }
+        }
+        
+        return actualizado ? prodModificado : [];
+    }
+
+    async deleteProduct(id) {
+        let eliminado = false;
+
+        // Leemos los productos para asegurarnos que el arreglo se encuentre actualizado
+        await this.leerProductos();
+
+        const existeProd = this.productos.some(prod => prod.id === id);
+
+        if(!existeProd) {
+            // No se encontro un producto con el id pasado
+            throw new Error(`No existe un producto con el id ${id}`);
+        } else {
+            this.productos = this.productos.filter(prod => prod.id !== id);
+
+            await this.escribirProductos();
+
+            eliminado = true;
+            console.log(`Producto eliminado correctamente`);
+        }
+
+        return eliminado;
+    }
 }
+
+module.exports = ProductManager;

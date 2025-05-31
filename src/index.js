@@ -5,7 +5,7 @@ const app = express();
 const PORT = 8080;
 
 //Utilizamos los enpoints guardados en las rutas
-const products = require('./routes/products.js');
+const products = require('./routes/route-products.js');
 
 //Resultado que obtendrá el cliente al entrar al servidor
 app.get('/', (req, res) => {
