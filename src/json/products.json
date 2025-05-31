@@ -1,16 +1,5 @@
 [
   {
-    "id": 2,
-    "title": "Televisor Pro",
-    "description": "El segundo mejor televisor del planeta",
-    "code": "TVP-02",
-    "price": 9091,
-    "status": true,
-    "stock": 2,
-    "category": "Televisor",
-    "thumbnails": []
-  },
-  {
     "id": 3,
     "title": "Televisor Pro",
     "description": "El segundo mejor televisor del planeta",
@@ -26,6 +15,17 @@
     "title": "Televisor",
     "description": "El segundo mejor televisor del planeta",
     "code": "TVP-04",
+    "price": 9092,
+    "status": true,
+    "stock": 2,
+    "category": "Televisor",
+    "thumbnails": []
+  },
+  {
+    "id": 5,
+    "title": "Televisor 2",
+    "description": "El segundo mejor televisor del planeta",
+    "code": "TVP-02",
     "price": 9092,
     "status": true,
     "stock": 2,

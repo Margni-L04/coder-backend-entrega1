@@ -6,6 +6,7 @@ const PORT = 8080;
 
 //Utilizamos los enpoints guardados en las rutas
 const products = require('./routes/route-products.js');
+const carts = require('./routes/route-carts.js');
 
 //Resultado que obtendrá el cliente al entrar al servidor
 app.get('/', (req, res) => {
@@ -14,6 +15,7 @@ app.get('/', (req, res) => {
 
 //Utilizamos las rutas
 app.use('/products', products);
+app.use('/carts', carts);
 
 //Abrimos el servidor en el puerto especificado
 app.listen(PORT, () => {

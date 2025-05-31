@@ -81,7 +81,8 @@ router.put('/:pid', async (req, res) => {
     } catch(error) {
         if(error.message.includes('no encontrado')) {
             res.status(404).send({ error: error.message });
-        } else if(error.message.includes('El valor de') || error.message.includes('proporcionaron datos validos')) {
+        } else if(error.message.includes('El valor de') || error.message.includes('datos validos')
+                    || error.message.includes('campo permitido')) {
             res.status(400).send({ error: error.message });
         } else {
             res.status(500).send({ error: error.message });

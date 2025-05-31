@@ -52,7 +52,7 @@ class ProductManager {
         // Todos los campos son obligatorios, validamos que eso se cumpla
         if(!title || !description || !code || !price || !status || !stock || !category || !thumbnails) {
 
-            throw new Error("No se agregaron todos los campos obligatorios");
+            throw new Error("No se agregaron todos los campos obligatorios: {title, description, code, price, status, stock, category, thumbnails}");
 
         } else if(typeof(title) !== 'string' || typeof(description) !== 'string' || typeof(code) !== 'string'
                     || typeof(price) !== 'number' || typeof(status) !== 'boolean' || typeof(stock) !== 'number'
@@ -104,8 +104,11 @@ class ProductManager {
     }
 
     async updateProduct(id, camposModificados) {
-        // camposModificados = { title, description, code, price, status, stock, category, thumbnails }
         let actualizado = false;
+
+        const camposPermitidos = [
+            'title', 'description', 'code', 'price', 'status', 'stock', 'category', 'thumbnails'
+        ];
 
         // Leemos los productos para asegurarnos que el arreglo se encuentre actualizado
         await this.leerProductos();
@@ -119,7 +122,11 @@ class ProductManager {
         } else {
             // Actualizamos únicamente los datos que nos pasaron
             for(let campo in camposModificados) {
-                
+                // Validamos que el campo sea uno permitido para modificar
+                if(!camposPermitidos.includes(campo)) {
+                    throw new Error(`'${campo}' no es un campo permitido para modificar un producto`);
+                }
+
                 // Validaciones de que se cumplan las condiciones de tipos y otras restricciones
                 if(campo === 'code') {
                     if(this.productos.some((prod, i) => i !== index && prod.code === camposModificados.code)) {
@@ -140,14 +147,14 @@ class ProductManager {
                     throw new Error(`El valor de thumbnail debe ser un arreglo`);
                 }
 
-                if (prodModificado[campo] !== camposModificados[campo] && campo !== 'id') {
+                if (prodModificado[campo] !== camposModificados[campo]) {
                     prodModificado[campo] = camposModificados[campo];
                     actualizado = true;
                 }
             }
 
             if(actualizado) {
-                console.log(`Producto actualizado correctamente: ${this.productos[index]}`);
+                console.log(`Producto actualizado correctamente: ${prodModificado}`);
                 await this.escribirProductos();
             } else {
                 throw new Error("No se proporcionaron datos validos para actualizar");
