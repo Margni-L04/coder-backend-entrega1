@@ -1,9 +1,27 @@
 # Programación Backend I: Desarrollo Avanzado de Backend - Entrega N°1
 
-Servidor en Node.js + Express que gestiona productos y carritos de compra mediante endpoints REST. La información se persiste en archivos `products.json` y `carts.json`.
+## Descripción General
 
-##  Ejecutar el proyecto
+Este proyecto consiste en el desarrollo de un **servidor backend** utilizando **Node.js y Express** para gestionar productos y carritos de compra
 
-```bash
-npm install ## Para instalar las dependencias
-npm run dev ## Para ejecutar el proyecto
+## Cómo Ejecutar el Proyecto
+
+Para iniciar este servidor, hay que seguir los siguientes pasos:
+
+1.  Clonar el repositorio en tu máquina local:
+    ```bash
+    git clone https://github.com/Margni-L04/coder-backend-entrega1.git
+    ```
+2.  Instalar las dependencias del proyecto:
+    ```bash
+    npm install
+    ```
+3.  Iniciar el servidor:
+    ```bash
+    npm run dev
+    ```
+    El servidor estará disponible en `http://localhost:8080`.
+
+## Autor
+
+* **Lucas A. Margni**
