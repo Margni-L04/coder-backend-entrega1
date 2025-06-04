@@ -1,35 +1,57 @@
 [
   {
-    "id": 3,
-    "title": "Televisor Pro",
-    "description": "El segundo mejor televisor del planeta",
-    "code": "TVP-01",
-    "price": 9091,
+    "id": 1,
+    "title": "Auriculares Inalámbricos X100",
+    "description": "Auriculares con cancelación activa de ruido y batería de larga duración",
+    "code": "AUX-100",
+    "price": 1999,
     "status": true,
-    "stock": 2,
-    "category": "Televisor",
+    "stock": 15,
+    "category": "Audio",
+    "thumbnails": ["auriculares1.png", "auriculares2.png"]
+  },
+  {
+    "id": 2,
+    "title": "Smartwatch FitLife",
+    "description": "Reloj inteligente con monitor de salud y GPS integrado",
+    "code": "SWF-200",
+    "price": 3499,
+    "status": true,
+    "stock": 8,
+    "category": "Wearables",
     "thumbnails": []
+  },
+  {
+    "id": 3,
+    "title": "Cámara 4K UltraZoom",
+    "description": "Cámara digital con lente de 40x zoom óptico y grabación en 4K",
+    "code": "CAM-4KUZ",
+    "price": 5290,
+    "status": true,
+    "stock": 4,
+    "category": "Fotografía",
+    "thumbnails": ["camara1.jpg"]
   },
   {
     "id": 4,
-    "title": "Televisor",
-    "description": "El segundo mejor televisor del planeta",
-    "code": "TVP-04",
-    "price": 9092,
+    "title": "Tablet Go 10\"",
+    "description": "Tablet liviana con pantalla HD de 10 pulgadas y 64GB de almacenamiento",
+    "code": "TAB-GO10",
+    "price": 3100,
     "status": true,
-    "stock": 2,
-    "category": "Televisor",
-    "thumbnails": []
+    "stock": 6,
+    "category": "Tablets",
+    "thumbnails": ["tablet_front.png", "tablet_back.png"]
   },
   {
     "id": 5,
-    "title": "Televisor 2",
-    "description": "El segundo mejor televisor del planeta",
-    "code": "TVP-02",
-    "price": 9092,
+    "title": "Consola Gamer X",
+    "description": "Consola de videojuegos de última generación con soporte 8K",
+    "code": "CGX-500",
+    "price": 7599,
     "status": true,
-    "stock": 2,
-    "category": "Televisor",
+    "stock": 3,
+    "category": "Videojuegos",
     "thumbnails": []
   }
 ]
